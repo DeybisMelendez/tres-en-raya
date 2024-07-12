@@ -1,3 +1,9 @@
+function bitCount (n) {
+    n = n - ((n >> 1) & 0x55555555)
+    n = (n & 0x33333333) + ((n >> 2) & 0x33333333)
+    return ((n + (n >> 4) & 0xF0F0F0F) * 0x1010101) >> 24
+}
+
 class TicTacToeAI {
     board = [
         0b000000000, // Tablero Primer jugador
@@ -67,20 +73,20 @@ class TicTacToeAI {
         }
         return false
     }
-    negamax(turn, depth) {
+    negamax(turn) {
         if (this.isEndGame()) {
-            return -turn * (9-depth) * turn
+            return -turn * turn
         } else if (this.isDraw()) {
             return 0
         }
         let moves = this.generateMoves()
-        let score = -1000
+        let maxScore = -1000
         for (let i=0; i < moves.length; i++) {
             this.makeMove(turn, moves[i])
-            score = Math.max(score, -this.negamax(-turn, depth++))
+            maxScore = Math.max(maxScore, -this.negamax(-turn))
             this.unMakeMove(turn, moves[i])
         }
-        return score
+        return maxScore
     }
     getBestMove(turn) {
         let moves = this.generateMoves()
@@ -88,7 +94,7 @@ class TicTacToeAI {
         let bestMove = 0
         for (let i = 0; i < moves.length; i++) {
             this.makeMove(turn,moves[i])
-            let score = -this.negamax(-turn,1)
+            let score = -this.negamax(-turn)
             if (score > bestScore) {
                 bestScore = score
                 bestMove = moves[i]
@@ -142,19 +148,44 @@ class TicTacToeAI {
         }
         return total
     }
-    perftTest() {
-        for (let i = 1; i<10;i++) {
-            let start = performance.now()
+    perftTest(turn) {
+        let result = `
+        <tr>
+            <th>Depth</th>
+            <th>Nodes</th>
+            <th>Draws</th>
+            <th>First Player Wins</th>
+            <th>Second Player Wins</th>
+            <th>Time in millis</th>
+        </tr>`
+        let maxMoves = 10-bitCount(this.board[0]|this.board[1])
+        for (let i = 1; i<maxMoves;i++) {
             this.drawsCount = 0
             this.secondPlayerWinCount = 0
             this.firstPlayerWinCount = 0
-            let perftResult = this.perft(i,1)
+            let start = performance.now()
+            let perftResult = this.perft(i,turn)
             let end = performance.now()
-            console.log("Depth",i,"Nodes",perftResult,"Draws",this.drawsCount,"First Player Win",this.firstPlayerWinCount,"Second Player Win",this.secondPlayerWinCount, "Time millis",end-start)
+            let depthResult = `
+            <tr>
+                <td>${i}</td>
+                <td>${perftResult}</td>
+                <td>${this.drawsCount}</td>
+                <td>${this.firstPlayerWinCount}</td>
+                <td>${this.secondPlayerWinCount}</td>
+                <td>${end-start}</td>
+            </tr>`
+            console.log(depthResult)
+            result += depthResult
         }
+        return result
     }
 }
-
-const ticTacToe = new TicTacToeAI()
-ticTacToe.perftTest()
-//console.log(ticTacToe.getBestMove(1))
+/*
+const ttt = new TicTacToeAI()
+let depth = 9
+let start = performance.now()
+let perft = ttt.perft(depth,1)
+let end = performance.now()
+console.log("Depth",depth,"Time in millis",end-start)
+*/
