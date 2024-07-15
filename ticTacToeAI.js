@@ -1,9 +1,3 @@
-function bitCount (n) {
-    n = n - ((n >> 1) & 0x55555555)
-    n = (n & 0x33333333) + ((n >> 2) & 0x33333333)
-    return ((n + (n >> 4) & 0xF0F0F0F) * 0x1010101) >> 24
-}
-
 class TicTacToeAI {
     board = [
         0b000000000, // Tablero Primer jugador
@@ -88,6 +82,7 @@ class TicTacToeAI {
         }
         return maxScore
     }
+
     getBestMove(turn) {
         let moves = this.generateMoves()
         let bestScore = -1000
@@ -104,6 +99,10 @@ class TicTacToeAI {
         return this.MOVE_PATTERN.indexOf(bestMove)
     }
     // Para contar estadísticas
+    firstPlayerWinCount = 0
+    secondPlayerWinCount = 0
+    drawsCount = 0
+
     isFirstPlayerWin() {
         for (let i = 0; i < this.WIN_PATTERN.length; i++) {
             if ((this.board[this.FIRST_PLAYER] & this.WIN_PATTERN[i]) == this.WIN_PATTERN[i]) {
@@ -120,11 +119,7 @@ class TicTacToeAI {
         }
         return false
     }
-    // Perft
-    firstPlayerWinCount = 0
-    secondPlayerWinCount = 0
-    drawsCount = 0
-
+    
     perft(depth, turn) {
         if (this.isFirstPlayerWin()) {
             this.firstPlayerWinCount++
@@ -148,44 +143,12 @@ class TicTacToeAI {
         }
         return total
     }
-    perftTest(turn) {
-        let result = `
-        <tr>
-            <th>Depth</th>
-            <th>Nodes</th>
-            <th>Draws</th>
-            <th>First Player Wins</th>
-            <th>Second Player Wins</th>
-            <th>Time in millis</th>
-        </tr>`
-        let maxMoves = 10-bitCount(this.board[0]|this.board[1])
-        for (let i = 1; i<maxMoves;i++) {
-            this.drawsCount = 0
-            this.secondPlayerWinCount = 0
-            this.firstPlayerWinCount = 0
-            let start = performance.now()
-            let perftResult = this.perft(i,turn)
-            let end = performance.now()
-            let depthResult = `
-            <tr>
-                <td>${i}</td>
-                <td>${perftResult}</td>
-                <td>${this.drawsCount}</td>
-                <td>${this.firstPlayerWinCount}</td>
-                <td>${this.secondPlayerWinCount}</td>
-                <td>${end-start}</td>
-            </tr>`
-            console.log(depthResult)
-            result += depthResult
-        }
-        return result
-    }
 }
-/*
-const ttt = new TicTacToeAI()
+
+/*const ttt = new TicTacToeAI()
 let depth = 9
 let start = performance.now()
 let perft = ttt.perft(depth,1)
 let end = performance.now()
-console.log("Depth",depth,"Time in millis",end-start)
+console.log("Depth", depth, "Solution", ttt.negamax(1), "Nodes",perft,"Time in millis", end-start)
 */
