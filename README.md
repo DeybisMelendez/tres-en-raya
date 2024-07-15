@@ -2,7 +2,7 @@
 
 Decidí hacer una IA de Tres en Raya sencillo porque me entró curiosidad conocer cuantas posiciones posibles se pueden alcanzar en el juego. Luego de desarrollarlo, llegué a la siguiente conclusión:
 
-El juego contiene 255,168 estados posibles, de los cuales el primer jugador gana 131,184, el segundo jugador gana 77,904 y 46,080 son empates.
+El juego contiene 255,168 nodos posibles, de los cuales el primer jugador gana 131,184, el segundo jugador gana 77,904 y 46,080 son empates.
 
 La solución del juego es Empate.
 
@@ -40,7 +40,7 @@ turn es el turno del juego, 1 para el primer jugador, -1 para el segundo jugador
 
 Genera la mejor jugada para el jugador.
 
-turn es el jugador a buscar la jugada, 1 para el primer jugador, -1 para el segundo jugador.
+turn es el turno del jugador a buscar la jugada, 1 para el primer jugador, -1 para el segundo jugador.
 
 ### ttt.perft(depth, turn)
 
