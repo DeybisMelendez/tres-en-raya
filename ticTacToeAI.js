@@ -27,6 +27,7 @@ class TicTacToeAI {
         0b000000010,
         0b000000001,
     ]
+    memo = {}
     generateMoves() {
         let moves = []
         let allBoard = this.board[this.FIRST_PLAYER] | this.board[this.SECOND_PLAYER]
@@ -73,12 +74,20 @@ class TicTacToeAI {
         } else if (this.isDraw()) {
             return 0
         }
+        let keyMemo = (this.board[0] | (1 << 9)) | this.board[1]
+        keyMemo |= turn == 1 ? 1 << 10 : 0
+        let valueMemo = this.memo[keyMemo]
+        if (valueMemo !== undefined) {
+            return valueMemo
+        }
         let moves = this.generateMoves()
         let maxScore = -1000
         for (let i=0; i < moves.length; i++) {
             this.makeMove(turn, moves[i])
-            maxScore = Math.max(maxScore, -this.negamax(-turn))
+            let score = -this.negamax(-turn)
+            maxScore = Math.max(maxScore, score)
             this.unMakeMove(turn, moves[i])
+            this.memo[keyMemo] = score
         }
         return maxScore
     }
@@ -145,10 +154,8 @@ class TicTacToeAI {
     }
 }
 
-/*const ttt = new TicTacToeAI()
-let depth = 9
+const ttt = new TicTacToeAI()
 let start = performance.now()
-let perft = ttt.perft(depth,1)
+let best = ttt.getBestMove(1)
 let end = performance.now()
-console.log("Depth", depth, "Solution", ttt.negamax(1), "Nodes",perft,"Time in millis", end-start)
-*/
+console.log(best, end-start)
